@@ -42,7 +42,7 @@ def build_2d_hamiltonian(N=20, potential='well'):
         for j in range(N):
             row = idx(i,j)
             # Potential
-            H[row, row] = -4. * inv_dx2 + V(i,j) # "Kinetic" ~ -4/dx^2 in 2D FD
+            H[row, row] = +4. * inv_dx2 + V(i,j) # "Kinetic" ~ -4/dx^2 in 2D FD
             # Neighbors (assuming no boundary conditions or Dirichlet)
             if i > 0: # up
                 H[row, idx(i-1, j)] = inv_dx2
@@ -55,6 +55,7 @@ def build_2d_hamiltonian(N=20, potential='well'):
     return H
 def solve_eigen(N=20, potential='well', n_eigs=None):   
     H = build_2d_hamiltonian(N, potential)
+    print(f"Hamiltonian: {H}")
     # Solve entire spectrum (careful for large N)
     vals, vecs = eigh(H)
     # Sort
@@ -81,3 +82,5 @@ if __name__ == '__main__':
         raise ValueError("n_eigs cannot exceed N^2.")
     vals, vecs = solve_eigen(N=args.N, potential=args.potential, n_eigs=args.n_eigs)
     print(f"Lowest {args.n_eigs} eigenvalues:", vals)
+    np.savetxt(f'eigs_N{args.N}.txt', vals)
+    
