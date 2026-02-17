@@ -66,6 +66,7 @@ def solve_eigen(N=20, potential='well', n_eigs=None):
         return vals_sorted, vecs_sorted
     else:
         return vals_sorted[:n_eigs], vecs_sorted[:, :n_eigs]
+    np.savetxt(f'eigs_N{N}.txt', vals)
 if __name__ == '__main__':
     # Example local test
 
@@ -83,4 +84,3 @@ if __name__ == '__main__':
     vals, vecs = solve_eigen(N=args.N, potential=args.potential, n_eigs=args.n_eigs)
     print(f"Lowest {args.n_eigs} eigenvalues:", vals)
     np.savetxt(f'eigs_N{args.N}.txt', vals)
-    
