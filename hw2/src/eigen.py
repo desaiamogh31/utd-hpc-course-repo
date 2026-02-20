@@ -3,7 +3,7 @@ from scipy.linalg import eigh
 import argparse
 import matplotlib.pyplot as plt
 
-VALID_POTENTIALS = ['well', 'harmonic']
+VALID_POTENTIALS = ['well', 'harmonic', 'anisotropic harmonic']
 def build_2d_hamiltonian(N=20, potential='well'):
     """
     Build a discretized 2D Hamiltonian on an N x N grid.
@@ -36,6 +36,10 @@ def build_2d_hamiltonian(N=20, potential='well'):
             y = (j - N/2) * dx
             # Quadratic potential V = k * (x^2 + y^2)
             return 4. * (x**2 + y**2)
+        elif potential == 'anisotropic harmonic':
+            x = (i - N/2) * dx
+            y = (j - N/2) * dx
+            return 4. * (x**2 + 0.1*y**2)
         else:
             return 0.
     # Build the matrix: For each (i, j), set diagonal for 2D Laplacian plus V
@@ -76,6 +80,8 @@ if __name__ == '__main__':
     parser.add_argument('--potential', choices=VALID_POTENTIALS, required=True)
     parser.add_argument('--n-eigs', type=int, required=True)
     #parser.add_argument("--out", type=str, required=True)   # <-- THIS
+    parser.add_argument("--out", type=str, required=True,
+                        help="Output file for eigenvalues.")
     parser.add_argument("--density-out", type=str, default=None,
                         help="Optional output file for ground-state probability density |psi(x,y)|^2.")
     parser.add_argument("--density-plot", type=str, default=None,
@@ -89,7 +95,7 @@ if __name__ == '__main__':
         raise ValueError("n_eigs cannot exceed N^2.")
     vals, vecs = solve_eigen(N=args.N, potential=args.potential, n_eigs=args.n_eigs)
     print(f"Lowest {args.n_eigs} eigenvalues:", vals)
-    #np.savetxt(args.out, vals)
+    np.savetxt(args.out, vals)
 
     if args.density_out is not None:
         psi0 = vecs[:, 0].reshape((args.N, args.N))
@@ -98,7 +104,7 @@ if __name__ == '__main__':
 
         plot_path = args.density_plot if args.density_plot is not None else f"{args.density_out}.png"
         plt.figure()
-        plt.imshow(prob_density, origin='lower', extent=[0, 1, 0, 1], aspect='auto')
+        plt.imshow(prob_density, origin='lower', extent=[1, args.N, 1, args.N], aspect='auto')
         plt.colorbar(label=r'$|\psi(x,y)|^2$')
         plt.title('Ground-state Probability Density')
         plt.xlabel('x')
