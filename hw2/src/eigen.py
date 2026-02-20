@@ -18,7 +18,7 @@ def build_2d_hamiltonian(N=20, potential='well'):
     H : ndarray of shape (N^2, N^2)
     The Hamiltonian matrix approximating -d^2/dx^2 - d^2/dy^2 + V(x,y).
     """
-    dx = 1. / float(N) # grid spacing, can be arbitrary
+    dx = 1. / float(N) # grid spacing
     inv_dx2 = float(N * N) # 1/dx^2
     H = np.zeros((N*N, N*N), dtype=np.float64)
     # Helper function to map (i,j) -> linear index
@@ -36,10 +36,11 @@ def build_2d_hamiltonian(N=20, potential='well'):
             y = (j - N/2) * dx
             # Quadratic potential V = k * (x^2 + y^2)
             return 4. * (x**2 + y**2)
+        # Example 3: Anisotropic harmonic oscillator; stronger confinement in x
         elif potential == 'anisotropic harmonic':
             x = (i - N/2) * dx
             y = (j - N/2) * dx
-            return 4. * (x**2 + 0.1*y**2)
+            return 4. * (x**2 + 0.2*y**2)
         else:
             return 0.
     # Build the matrix: For each (i, j), set diagonal for 2D Laplacian plus V
@@ -79,9 +80,7 @@ if __name__ == '__main__':
     parser.add_argument('--N', type=int, required=True)
     parser.add_argument('--potential', choices=VALID_POTENTIALS, required=True)
     parser.add_argument('--n-eigs', type=int, required=True)
-    #parser.add_argument("--out", type=str, required=True)   # <-- THIS
-    parser.add_argument("--out", type=str, required=True,
-                        help="Output file for eigenvalues.")
+    #parser.add_argument("--out", type=str, required=True) 
     parser.add_argument("--density-out", type=str, default=None,
                         help="Optional output file for ground-state probability density |psi(x,y)|^2.")
     parser.add_argument("--density-plot", type=str, default=None,
@@ -95,10 +94,11 @@ if __name__ == '__main__':
         raise ValueError("n_eigs cannot exceed N^2.")
     vals, vecs = solve_eigen(N=args.N, potential=args.potential, n_eigs=args.n_eigs)
     print(f"Lowest {args.n_eigs} eigenvalues:", vals)
-    np.savetxt(args.out, vals)
+    #np.savetxt(args.out, vals)
 
+    # Optionally save the ground-state probability density and plot
     if args.density_out is not None:
-        psi0 = vecs[:, 0].reshape((args.N, args.N))
+        psi0 = vecs[:, 0].reshape((args.N, args.N)) # Ground-state wavefunction, flatten
         prob_density = np.abs(psi0) ** 2
         np.savetxt(args.density_out, prob_density)
 
