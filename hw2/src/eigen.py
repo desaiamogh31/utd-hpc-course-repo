@@ -1,6 +1,7 @@
 import numpy as np
 from scipy.linalg import eigh
 import argparse
+import matplotlib.pyplot as plt
 
 VALID_POTENTIALS = ['well', 'harmonic']
 def build_2d_hamiltonian(N=20, potential='well'):
@@ -42,7 +43,7 @@ def build_2d_hamiltonian(N=20, potential='well'):
         for j in range(N):
             row = idx(i,j)
             # Potential
-            H[row, row] = +4. * inv_dx2 + V(i,j) # "Kinetic" ~ -4/dx^2 in 2D FD
+            H[row, row] = +4. * inv_dx2 + V(i,j) # "Kinetic" ~ +4/dx^2 in 2D FD
             # Neighbors (assuming no boundary conditions or Dirichlet)
             if i > 0: # up
                 H[row, idx(i-1, j)] = inv_dx2
@@ -55,18 +56,18 @@ def build_2d_hamiltonian(N=20, potential='well'):
     return H
 def solve_eigen(N=20, potential='well', n_eigs=None):   
     H = build_2d_hamiltonian(N, potential)
-    print(f"Hamiltonian: {H}")
     # Solve entire spectrum (careful for large N)
     vals, vecs = eigh(H)
     # Sort
     idx_sorted = np.argsort(vals)
     vals_sorted = vals[idx_sorted]
     vecs_sorted = vecs[:, idx_sorted]
+    
     if n_eigs is None:
         return vals_sorted, vecs_sorted
     else:
         return vals_sorted[:n_eigs], vecs_sorted[:, :n_eigs]
-    np.savetxt(f'eigs_N{N}.txt', vals)
+
 if __name__ == '__main__':
     # Example local test
 
@@ -74,6 +75,11 @@ if __name__ == '__main__':
     parser.add_argument('--N', type=int, required=True)
     parser.add_argument('--potential', choices=VALID_POTENTIALS, required=True)
     parser.add_argument('--n-eigs', type=int, required=True)
+    #parser.add_argument("--out", type=str, required=True)   # <-- THIS
+    parser.add_argument("--density-out", type=str, default=None,
+                        help="Optional output file for ground-state probability density |psi(x,y)|^2.")
+    parser.add_argument("--density-plot", type=str, default=None,
+                        help="Optional image file for imshow plot of ground-state density. If omitted, defaults to <density-out>.png.")
     args = parser.parse_args()
     if args.N <= 0:
         raise ValueError("N must be a positive integer.")
@@ -83,4 +89,22 @@ if __name__ == '__main__':
         raise ValueError("n_eigs cannot exceed N^2.")
     vals, vecs = solve_eigen(N=args.N, potential=args.potential, n_eigs=args.n_eigs)
     print(f"Lowest {args.n_eigs} eigenvalues:", vals)
-    np.savetxt(f'eigs_N{args.N}.txt', vals)
+    #np.savetxt(args.out, vals)
+
+    if args.density_out is not None:
+        psi0 = vecs[:, 0].reshape((args.N, args.N))
+        prob_density = np.abs(psi0) ** 2
+        np.savetxt(args.density_out, prob_density)
+
+        plot_path = args.density_plot if args.density_plot is not None else f"{args.density_out}.png"
+        plt.figure()
+        plt.imshow(prob_density, origin='lower', extent=[0, 1, 0, 1], aspect='auto')
+        plt.colorbar(label=r'$|\psi(x,y)|^2$')
+        plt.title('Ground-state Probability Density')
+        plt.xlabel('x')
+        plt.ylabel('y')
+        plt.tight_layout()
+        plt.savefig(plot_path, dpi=200)
+        plt.close()
+        print(f"Saved ground-state density to {args.density_out}")
+        print(f"Saved ground-state density plot to {plot_path}")

@@ -1,11 +1,11 @@
 #!/bin/bash
 #SBATCH --job-name=eigen-sweep
 #SBATCH --output=eigen-%a_%A.out
-#SBATCH --time=0:10:00
+#SBATCH --time=0:20:00
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=1
 #SBATCH --mem=2G
-#SBATCH --array=0-7
+#SBATCH --array=0-9
 #SBATCH --partition=cpu-preempt
 
 # Optional: Load modules
@@ -15,7 +15,7 @@
 set -euo pipefail
 
 # Sweep values
-Ns=(10 80 160 3200)
+Ns=(10 20 40 80 160)
 potentials=(well harmonic)
 
 nN=${#Ns[@]}
@@ -35,4 +35,4 @@ pot=${potentials[$ip]}
 
 mkdir -p results
 
-python3 eigen.py --N "$N" --potential "$pot" --n-eigs 5
+python3 eigen.py --N "$N" --potential "$pot" --n-eigs 5 --output "results/eigs_N${N}_${pot}.txt"
