@@ -20,8 +20,7 @@ def build_2d_hamiltonian_sparse(N=20, potential="well"):
     def idx(i, j):
         return i * N + j
 
-    # Potential evaluated on the same grid convention you used
-    # x = (i - N/2) * dx, y = (j - N/2) * dx
+
     def V(i, j):
         #Boundary conditions: Virtual Infinite potential outside the box (Dirichlet BCs)
         if i == 0 or i == N - 1 or j == 0 or j == N - 1:
@@ -82,7 +81,7 @@ if __name__ == '__main__':
     parser.add_argument('--N', type=int, required=True)
     parser.add_argument('--potential', choices=VALID_POTENTIALS, required=True)
     parser.add_argument('--n-eigs', type=int, required=True)
-    #parser.add_argument("--out", type=str, required=True) 
+    parser.add_argument("--out", type=str, required=True)
     parser.add_argument("--density-out", type=str, default=None,
                         help="Optional output file for ground-state probability density |psi(x,y)|^2.")
     parser.add_argument("--density-plot", type=str, default=None,
@@ -96,7 +95,7 @@ if __name__ == '__main__':
         raise ValueError("n_eigs cannot exceed N^2.")
     vals, vecs = solve_eigen(N=args.N, potential=args.potential, n_eigs=args.n_eigs)
     print(f"Lowest {args.n_eigs} eigenvalues:", vals)
-    #np.savetxt(args.out, vals)
+    np.savetxt(args.out, vals)
 
     # Optionally save the ground-state probability density and plot
     if args.density_out is not None:
