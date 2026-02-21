@@ -2,6 +2,8 @@ import numpy as np
 from scipy.linalg import eigh
 import argparse
 import matplotlib.pyplot as plt
+from scipy.sparse.linalg import eigsh
+from scipy.sparse import lil_matrix, csr_matrix
 
 VALID_POTENTIALS = ['well', 'harmonic', 'anisotropic_harmonic']
 def build_2d_hamiltonian_sparse(N=20, potential="well"):
