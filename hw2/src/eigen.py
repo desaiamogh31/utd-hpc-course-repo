@@ -23,6 +23,9 @@ def build_2d_hamiltonian_sparse(N=20, potential="well"):
     # Potential evaluated on the same grid convention you used
     # x = (i - N/2) * dx, y = (j - N/2) * dx
     def V(i, j):
+        #Boundary conditions: Virtual Infinite potential outside the box (Dirichlet BCs)
+        if i == 0 or i == N - 1 or j == 0 or j == N - 1:
+            return float(N**2)
         if potential == "well":
             return 0.0
         elif potential == "harmonic":
