@@ -3,75 +3,74 @@ from scipy.linalg import eigh
 import argparse
 import matplotlib.pyplot as plt
 
-VALID_POTENTIALS = ['well', 'harmonic', 'anisotropic harmonic']
-def build_2d_hamiltonian(N=20, potential='well'):
+VALID_POTENTIALS = ['well', 'harmonic', 'anisotropic_harmonic']
+def build_2d_hamiltonian_sparse(N=20, potential="well"):
     """
-    Build a discretized 2D Hamiltonian on an N x N grid.
-    Parameters
-    ----------
-    N : int
-    potential : str
-    Number of points in each dimension (N^2 total points).
-    Choose the potential. 'well' or 'harmonic' examples.
-    Returns
-    -------
-    H : ndarray of shape (N^2, N^2)
-    The Hamiltonian matrix approximating -d^2/dx^2 - d^2/dy^2 + V(x,y).
+    Build a sparse (CSR) discretized 2D Hamiltonian on an N x N grid.
+
+    H approximates:  -∂^2/∂x^2 - ∂^2/∂y^2 + V(x,y)
+    with a 5-point stencil.
     """
-    dx = 1. / float(N) # grid spacing
-    inv_dx2 = float(N * N) # 1/dx^2
-    H = np.zeros((N*N, N*N), dtype=np.float64)
-    # Helper function to map (i,j) -> linear index
+    dx = 1.0 / float(N)
+    inv_dx2 = 1.0 / (dx * dx)  # = N^2
+
+    n = N * N
+    H = lil_matrix((n, n), dtype=np.float64)
+
     def idx(i, j):
         return i * N + j
-        # Potential function
+
+    # Potential evaluated on the same grid convention you used
+    # x = (i - N/2) * dx, y = (j - N/2) * dx
     def V(i, j):
-        # Example 1: infinite square well -> zero in interior, large outside
-        if potential == 'well':
-            # No boundary enforcement here, but can skip boundary wavefunction
-            return 0.
-        # Example 2: 2D harmonic oscillator around center
-        elif potential == 'harmonic':
-            x = (i - N/2) * dx
-            y = (j - N/2) * dx
-            # Quadratic potential V = k * (x^2 + y^2)
-            return 4. * (x**2 + y**2)
+        if potential == "well":
+            return 0.0
+        elif potential == "harmonic":
+            x = (i - N / 2.0) * dx
+            y = (j - N / 2.0) * dx
+            return 4.0 * (x * x + y * y)
         # Example 3: Anisotropic harmonic oscillator; stronger confinement in x
-        elif potential == 'anisotropic harmonic':
+        elif potential == 'anisotropic_harmonic':
             x = (i - N/2) * dx
             y = (j - N/2) * dx
             return 4. * (x**2 + 0.2*y**2)
         else:
-            return 0.
+            raise ValueError(f"Unknown potential: {potential}")
     # Build the matrix: For each (i, j), set diagonal for 2D Laplacian plus V
     for i in range(N):
         for j in range(N):
-            row = idx(i,j)
-            # Potential
-            H[row, row] = +4. * inv_dx2 + V(i,j) # "Kinetic" ~ +4/dx^2 in 2D FD
-            # Neighbors (assuming no boundary conditions or Dirichlet)
-            if i > 0: # up
-                H[row, idx(i-1, j)] = inv_dx2
-            if i < N-1: # down
-                H[row, idx(i+1, j)] = inv_dx2
-            if j > 0: # left
-                H[row, idx(i, j-1)] = inv_dx2
-            if j < N-1: # right
-                H[row, idx(i, j+1)] = inv_dx2
-    return H
-def solve_eigen(N=20, potential='well', n_eigs=None):   
-    H = build_2d_hamiltonian(N, potential)
-    # Solve entire spectrum (careful for large N)
-    vals, vecs = eigh(H)
-    # Sort
-    idx_sorted = np.argsort(vals)
-    vals_sorted = vals[idx_sorted]
-    vecs_sorted = vecs[:, idx_sorted]
-    
-    if n_eigs is None:
-        return vals_sorted, vecs_sorted
-    else:
-        return vals_sorted[:n_eigs], vecs_sorted[:, :n_eigs]
+            row = idx(i, j)
+
+            # Kinetic term: (-∇^2) with 5-point stencil
+            # diag = 4/dx^2, neighbors = -1/dx^2
+            H[row, row] = 4.0 * inv_dx2 + V(i, j)
+
+            if i > 0:
+                H[row, idx(i - 1, j)] = -inv_dx2
+            if i < N - 1:
+                H[row, idx(i + 1, j)] = -inv_dx2
+            if j > 0:
+                H[row, idx(i, j - 1)] = -inv_dx2
+            if j < N - 1:
+                H[row, idx(i, j + 1)] = -inv_dx2
+
+    return H.tocsr()  # eigsh works best with CSR/CSC
+
+def solve_eigen_sparse(N=20, potential="well", n_eigs=5):
+    """
+    Compute the lowest n_eigs eigenvalues/eigenvectors using sparse eigensolver.
+    """
+
+    H = build_2d_hamiltonian_sparse(N, potential)
+
+    # which='SA' => smallest algebraic eigenvalues (what you want for ground state)
+    vals, vecs = eigsh(H, k=n_eigs, which="SA")
+
+    # eigsh does NOT guarantee sorted output
+    idx_sort = np.argsort(vals)
+    vals = vals[idx_sort]
+    vecs = vecs[:, idx_sort]
+    return vals, vecs
 
 if __name__ == '__main__':
     # Example local test
