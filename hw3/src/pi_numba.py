@@ -1,5 +1,5 @@
 import random, sys
-import timeitls
+import timeit
 from numba import jit, njit, prange
 
 @njit
