@@ -1,17 +1,6 @@
 import numpy as np
 import asyncio
-
-def lorentzian_histogram(n, bins=100, xmin=-10, xmax=10):
-    """
-    Sample n random points from the Lorentzian distribution
-    using inverse transform sampling. Make a histogram with
-    the specified bin count and range. Returns counts.
-    """
-    n=int(n)
-    u = np.random.random(n) # Uniform(0,1)
-    x = 1. / np.tan(np.pi * u) # x = 1/tan(pi*u)
-    counts, _ = np.histogram(x, bins=bins, range=(xmin, xmax))
-    return counts # No need to return bin edges for uniform bins
+from lorentzian import lorentzian_histogram
 
 async def async_lorentzian_histogram(n, bins=100, xmin=-10, xmax=10):
     """
