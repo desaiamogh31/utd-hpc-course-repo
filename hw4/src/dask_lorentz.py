@@ -31,4 +31,5 @@ def run_dask(n:float, n_tasks=4):
     chunks[:n % n_tasks] += 1 # Distribute remainder
     tasks = [delayed_lorentzian_histogram(chunk) for chunk in chunks]
     results = dask.compute(*tasks) # Compute all tasks
+    print(f"Results shapes: {np.shape(results)}") # Debug print
     return np.sum(results, axis=0) # Aggregate results

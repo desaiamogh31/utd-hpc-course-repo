@@ -1,5 +1,8 @@
 import numpy as np
-from numba import njit, prange, atomic
+from numba import njit, prange
+from numba.core import cgutils
+import numpy as np
+
 @njit(parallel=True, nogil=True)
 def lorentzian_histogram_numba(n, bins=100, xmin=-10, xmax=10):
     """
@@ -16,5 +19,5 @@ def lorentzian_histogram_numba(n, bins=100, xmin=-10, xmax=10):
         x = 1. / np.tan(np.pi * u) # x = 1/tan(pi*u)
         ix = int((x - xmin) * xfac) # Map x to bin index
         if 0 <= ix < bins:
-            atomic.add(counts, ix, 1) # Atomic increment
+            cgutils.atomic_add(counts, ix, 1) # Atomic increment
     return counts

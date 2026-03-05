@@ -1,19 +1,6 @@
 import numpy as np
 from concurrent.futures import ProcessPoolExecutor
-
-def lorentzian_histogram(n, bins=100, xmin=-10, xmax=10, seed=None):
-    """
-    Sample n random points from the Lorentzian distribution
-    using inverse transform sampling. Make a histogram with
-    the specified bin count and range. Returns counts.
-    """
-    n =int(n) # Ensure n is an integer
-    # Use a per-call Generator so behavior is reproducible across processes
-    rng = np.random.default_rng(seed)
-    u = rng.random(n) # Uniform(0,1)
-    x = 1. / np.tan(np.pi * u) # x = 1/tan(pi*u)
-    counts, _ = np.histogram(x, bins=bins, range=(xmin, xmax))
-    return counts # No need to return bin edges for uniform bins
+from lorentzian import lorentzian_histogram
 
 
 def run_ppe(n, max_workers=4, bins=100, xmin=-10, xmax=10, base_seed=42):
