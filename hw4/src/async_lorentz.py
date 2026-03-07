@@ -53,7 +53,7 @@ if __name__ == "__main__":
     #Strong Scaling
     n=1e7
     times=[]
-    thread_counts = [1, 2, 4]
+    thread_counts = [1, 2, 4, 8, 16, 32] # Adjust thread counts as needed
     for n_threads in thread_counts:
         start_time = time.perf_counter()
         counts = run_async(n*n_threads, n_tasks=n_threads, bins=100, xmin=-10, xmax=10, n_subchunks=10)
