@@ -45,4 +45,42 @@ def run_async(n, n_tasks=4, bins=100, xmin=-10, xmax=10, n_subchunks=10):
     """
     Run the Lorentzian sampling in parallel using asyncio.
     """
+    n = int(n)
     return asyncio.run(get_counts(n, n_tasks, bins, xmin, xmax, n_subchunks))
+
+if __name__ == "__main__":
+    import time
+    #Strong Scaling
+    n=1e7
+    times=[]
+    thread_counts = [1, 2, 4]
+    for n_threads in thread_counts:
+        start_time = time.perf_counter()
+        counts = run_async(n*n_threads, n_tasks=n_threads, bins=100, xmin=-10, xmax=10, n_subchunks=10)
+        end_time = time.perf_counter()
+        thread_time =  end_time - start_time
+        times.append(thread_time)
+        print(f"Threads: {n_threads}, Time: {thread_time:.3f} seconds")
+    
+    np.savetxt("async_lorentzian_strong_scaling_times.txt",
+        np.column_stack([thread_counts, times]),
+        fmt="%d %.6f")
+    
+    #Weak Scaling
+    n=1e6
+    times=[]
+    thread_counts = [1, 2, 4] # Adjust thread counts as needed
+    for n_threads in thread_counts:
+        start_time = time.perf_counter()
+        counts = run_async(n*n_threads, n_tasks=n_threads, bins=100, xmin=-10, xmax=10, n_subchunks=10)
+        end_time = time.perf_counter()
+        thread_time =  end_time - start_time
+        times.append(thread_time)
+        print(f"Threads: {n_threads}, Time: {thread_time:.3f} seconds")
+    
+    np.savetxt("async_lorentzian_weak_scaling_times.txt",
+        np.column_stack([thread_counts, times]),
+        fmt="%d %.6f")
+    
+
+
