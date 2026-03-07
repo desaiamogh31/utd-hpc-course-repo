@@ -1,4 +1,0 @@
-Total samples: 100000000
-Runtime: 0.403 seconds
-Samples per second: 247840651
-Results saved to lorentzian_histogram.txt

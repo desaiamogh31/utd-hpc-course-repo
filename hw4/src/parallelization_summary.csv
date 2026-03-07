@@ -1,0 +1,4 @@
+Approach,Problem Size,Scaling Type,Min Concurrency,Max Concurrency,Runtime Min (s),Runtime Max (s),Max Speedup,Max Efficiency,Data Source
+MPI,1e8,Strong,1,32,0.2810,3.1410,11.18x,100.00%,parallel-output-1e8.csv
+MPI,1e9,Strong,1,32,2.6220,31.8540,12.15x,100.00%,parallel-output-1e9.csv
+Multi-threading*,1e7-1e8,Strong & Weak,1,32,< 0.05,> 1.0,5-20x,Varies,See individual approach cells

@@ -1,0 +1,132 @@
+Running with n=1 processes
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+Running with n=2 processes
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+Running with n=4 processes
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+Running with n=8 processes
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+Running with n=16 processes
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+Running with n=32 processes
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'
+usage: mpi_lorentz.py [-h] [--n N] [--bins BINS]
+mpi_lorentz.py: error: argument --n: invalid int value: '100000000*n'

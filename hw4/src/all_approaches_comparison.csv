@@ -1,0 +1,10 @@
+Approach,Problem Size,Scaling,Concurrency Range,Library/Type,Notes
+Threading,1e7,Strong,1-32,Built-in threads,"CPU-bound, threading ineffective due to GIL"
+Multiprocessing,1e8,Strong,1-32,Built-in multiproc,"Full process isolation, true parallelism"
+ProcessPoolExecutor,1e7,Strong,1-32,concurrent.futures,Thread/process pool with futures
+Asyncio,1e7,Strong,1-32,Built-in async,"Event-loop based, CPU-bound limited"
+Dask,1e7,Strong,1-32,Dask (Distributed),"Task graph, out-of-core capable"
+Joblib,1e7,Strong,1-32,Scikit-learn utils,"Parallel loops, backend flexible"
+MPIRE,1e7,Strong,1-32,MPIRE,Modern multiprocessing library
+MPI (1e8),1e8,Strong,1-32,OpenMPI,"Multi-node capable, cluster tested"
+MPI (1e9),1e9,Strong,1-32,OpenMPI,"Multi-node capable, larger problem"

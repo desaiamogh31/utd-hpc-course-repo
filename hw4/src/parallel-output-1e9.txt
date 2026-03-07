@@ -1,0 +1,30 @@
+Running with n=1 processes
+Total samples: 1000000000
+Runtime: 31.854 seconds
+Samples per second: 31393472
+Results saved to lorentzian_histogram.txt
+Running with n=2 processes
+Total samples: 1000000000
+Runtime: 16.719 seconds
+Samples per second: 59811468
+Results saved to lorentzian_histogram.txt
+Running with n=4 processes
+Total samples: 1000000000
+Runtime: 8.785 seconds
+Samples per second: 113824235
+Results saved to lorentzian_histogram.txt
+Running with n=8 processes
+Total samples: 1000000000
+Runtime: 4.437 seconds
+Samples per second: 225386916
+Results saved to lorentzian_histogram.txt
+Running with n=16 processes
+Total samples: 1000000000
+Runtime: 2.779 seconds
+Samples per second: 359869049
+Results saved to lorentzian_histogram.txt
+Running with n=32 processes
+Total samples: 1000000000
+Runtime: 2.622 seconds
+Samples per second: 381334406
+Results saved to lorentzian_histogram.txt

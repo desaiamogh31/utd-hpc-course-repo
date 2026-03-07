@@ -1,0 +1,33 @@
+
+WEAK SCALING TEST (n = n_procs × 100000000)
+======================================
+Weak: n_procs=1, total_n=100000000
+Total samples: 100000000
+Runtime: 5.936 seconds
+Samples per second: 16846749
+Results saved to lorentzian_histogram.txt
+
+Weak: n_procs=2, total_n=200000000
+Total samples: 200000000
+Runtime: 5.891 seconds
+Samples per second: 33952865
+Results saved to lorentzian_histogram.txt
+
+Weak: n_procs=4, total_n=400000000
+Total samples: 400000000
+Runtime: 5.932 seconds
+Samples per second: 67431125
+Results saved to lorentzian_histogram.txt
+
+Weak: n_procs=8, total_n=800000000
+Total samples: 800000000
+Runtime: 6.238 seconds
+Samples per second: 128242696
+Results saved to lorentzian_histogram.txt
+
+Weak: n_procs=16, total_n=1600000000
+Total samples: 1600000000
+Runtime: 6.359 seconds
+Samples per second: 251594637
+Results saved to lorentzian_histogram.txt
+
