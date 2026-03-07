@@ -49,7 +49,7 @@ if __name__ == "__main__":
         # Save results
         bin_edges = np.linspace(-10, 10, 101)
         bin_centers = (bin_edges[:-1] + bin_edges[1:]) / 2
-        np.savetxt(f"mpi_lorentzian_histogram_{size}.txt",
+        np.savetxt(f"../results/mpi_lorentzian_histogram_{size}.txt",
             np.column_stack([bin_centers, global_counts]),
             fmt="%.6f %d")
         print("Results saved to lorentzian_histogram.txt")
