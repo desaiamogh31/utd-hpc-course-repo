@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Activate the hpc_utd conda environment
+eval "$(conda shell.bash hook)"
+conda activate hpc_utd
+
+export OMP_NUM_THREADS=8
+
+function run() {
+    echo "Running $1..."
+    compiler="mpicxx -fopenmp -O3"
+    IFLAGS=""
+    LFLAGS="-lm"
+    $compiler -c $1.cc $IFLAGS
+    $compiler -o $1 $1.o $LFLAGS
+    time mpiexec -n 4 ./$1
+    rm $1.o $1
+}
+
+#run mpi_omp_atomic
+
+run mc_mpi_omp
+
+#run mpi_omp_critical
+# To run the C++ MPI + OpenMP parallel example:
+# $ bash run_mpi_omp.txt

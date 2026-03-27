@@ -1,0 +1,44 @@
+#!/bin/bash
+
+# Script to run NBODY multiple times with different N values and collect runtimes
+
+OUTPUT_FILE="nbody_serial_runtimes.txt"
+> "$OUTPUT_FILE"  # Clear output file
+
+# Array of different N values to test
+N_VALUES=(128 256 512 1024 2048 4096)
+
+# Number of runs per N value
+NUM_RUNS=5
+
+echo "Running NBODY with different N values..."
+echo "N,Run,Runtime(seconds)" >> "$OUTPUT_FILE"
+
+# Warmup run to prime caches and stabilize system
+echo "Warming up system..."
+WARMUP_N=128
+g++ -O3 -o NBODY NBODY.cc -DN=$WARMUP_N
+./NBODY > /dev/null
+echo "Warmup complete."
+echo ""
+
+for N in "${N_VALUES[@]}"; do
+    echo "Testing N=$N..."
+    
+    for ((run=1; run<=NUM_RUNS; run++)); do
+        # Compile with current N value
+        g++ -O3 -o NBODY NBODY.cc -DN=$N
+        
+        # Run and capture execution time
+        START=$(date +%s.%N)
+        ./NBODY > /dev/null
+        END=$(date +%s.%N)
+        
+        RUNTIME=$(echo "$END - $START" | bc)
+        
+        echo "$N,$run,$RUNTIME" >> "$OUTPUT_FILE"
+        echo "  Run $run: ${RUNTIME}s"
+    done
+done
+
+echo "Results saved to $OUTPUT_FILE"

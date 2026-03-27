@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Script to run NBODY OMP with different N values and threads and collect runtimes
+# Define arrays for N values and thread counts
+N_VALUES=(4096)
+THREAD_VALUES=(1 2 4 8)
+
+OUTPUT_FILE="nbody_omp_runtimes.txt"
+> "$OUTPUT_FILE"  # Clear output file
+
+echo "N,Run,Runtime(seconds)" >> "$OUTPUT_FILE"
+
+# Warmup run to prime caches
+echo "Running warmup..."
+export OMP_NUM_THREADS=1
+mpicxx -fopenmp -O3 -std=c++17 -DN=128 -o nbody_omp nbody_omp.cc -lm
+./nbody_omp > /dev/null
+echo " Warmpup run done ..."
+
+# Run benchmarks
+for n in "${N_VALUES[@]}"; do
+    # Compile for the current N value (N is a compile-time macro in nbody_omp.cc)
+    mpicxx -fopenmp -O3 -std=c++17 -DN=$n -o nbody_omp nbody_omp.cc -lm
+    for threads in "${THREAD_VALUES[@]}"; do
+        export OMP_NUM_THREADS=$threads
+        
+        # Use same timing method as serial script
+        START=$(date +%s.%N)
+        ./nbody_omp > /dev/null
+        END=$(date +%s.%N)
+        RUNTIME=$(echo "$END - $START" | bc)
+        
+        echo "$n, $threads, $RUNTIME" >> nbody_omp_runtimes.txt
+    done
+done
+
+echo "Results saved to $OUTPUT_FILE"

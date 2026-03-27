@@ -1,0 +1,46 @@
+#!/bin/bash
+
+# Script to run NBODY MPI with different rank counts and collect runtimes
+
+# Configuration
+OUTPUT_FILE="nbody_mpi_runtimes.txt"
+N_VALUES=(4096)
+RANK_VALUES=(1 2 4 8)
+
+# Compile the program once
+echo "Compiling nbody_mpi..."
+mpicxx -O3 -std=c++17 -o nbody_mpi nbody_mpi.cc -lm
+
+# Clear output file
+> "$OUTPUT_FILE"
+
+# Warmup run to prime caches
+echo "Running warmup..."
+mpiexec -n 1 ./nbody_mpi 1024 > /dev/null
+echo ""
+
+# Benchmark different N values and rank counts
+for n in "${N_VALUES[@]}"; do
+    for ranks in "${RANK_VALUES[@]}"; do
+        echo "Running N=$n with $ranks ranks..."
+        
+        # Capture start time
+        START=$(date +%s.%N)
+        
+        # Run the benchmark
+        mpiexec -n "$ranks" ./nbody_mpi "$n" > /dev/null
+        
+        # Capture end time
+        END=$(date +%s.%N)
+        
+        # Calculate runtime
+        RUNTIME=$(echo "$END - $START" | bc)
+        
+        # Save results
+        echo "$n,$ranks,$RUNTIME" >> "$OUTPUT_FILE"
+        echo "  Runtime: ${RUNTIME}s"
+    done
+done
+
+echo ""
+echo "Results saved to $OUTPUT_FILE"
