@@ -22,7 +22,7 @@ static const double v_max = 0.; // Maximum velocity
 static const double m_0 = 1.; // Mass value
 static const double epsilon = 0.01; // Softening parameter
 static const double epsilon2 = epsilon * epsilon; // Softening parameter^2
-static int thread; // Unique thread number
+//static int thread; // Unique thread number
 
 
 // Note that epsilon must be greater than zero!
@@ -30,9 +30,9 @@ using Vec = std::vector<double>; // Vector type
 using Vecs = std::vector<Vec>; // Vector of vectors type
 
 // Random number generator
-static std::mt19937 gen; // Mersenne twister engine
-static std::uniform_real_distribution<> ran(0., 1.); // Uniform distribution
-#pragma omp threadprivate(thread, gen, ran)
+// static std::mt19937 gen; // Mersenne twister engine
+// static std::uniform_real_distribution<> ran; // Uniform distribution
+// #pragma omp threadprivate(thread, gen, ran)
 // Print a vector to a file
 template <typename T>
 void save(const std::vector<T>& vec, const std::string& filename,
@@ -60,10 +60,18 @@ std::tuple<Vec, Vec> initial_conditions() {
     Vec x(ND), v(ND); // Allocate memory
     const double dx = x_max - x_min; // Position range
     const double dv = v_max - v_min; // Velocity range
-    #pragma omp parallel for
-    for (int i = 0; i < ND; ++i) {
-        x[i] = ran(gen) * dx + x_min; // Random initial positions
-        v[i] = ran(gen) * dv + v_min; // Random initial velocities
+
+    #pragma omp parallel
+    {
+        int thread = omp_get_thread_num();
+        std::mt19937 gen(thread);
+        std::uniform_real_distribution<> ran(0., 1.);
+    
+        #pragma omp for
+        for (int i = 0; i < ND; ++i) {
+            x[i] = ran(gen) * dx + x_min; // Random initial positions
+            v[i] = ran(gen) * dv + v_min; // Random initial velocities
+        }
     }
     return {x, v}; // Positions and velocities
 }
@@ -119,11 +127,12 @@ int main(int argc, char** argv) {
     Vec m(N, m_0); // Masses (all equal)
     Vecs x(T+1), v(T+1); // Positions and velocities
 
-     #pragma omp parallel
-    {
-        thread = omp_get_thread_num(); // Unique thread number
-        gen.seed(thread); // Seed the random number generator
-    }   
+    // #pragma omp parallel
+    // {
+    //     thread = omp_get_thread_num(); // Unique thread number
+    //     gen.seed(thread); // Seed the random number generator
+    //     ran = std::uniform_real_distribution<>(0., 1.);
+    // }     
     std::tie(x[0], v[0]) = initial_conditions(); // Set up initial conditions
    
     // Simulate the motion of N masses in D-dimensional space
