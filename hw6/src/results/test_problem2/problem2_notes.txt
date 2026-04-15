@@ -1,0 +1,12 @@
+Stability functions used:
+Euler: R(z) = 1 + z
+RK2(midpoint): R(z) = 1 + z + z^2/2
+RK4: R(z) = 1 + z + z^2/2 + z^3/6 + z^4/24
+
+On the negative real axis the approximate stability endpoints are:
+Euler: -2.000000 (theory: -2)
+RK2:   -2.000000 (theory: -2)
+RK4:   -2.785250 (theory: about -2.7853)
+
+Explicit RK stability functions are polynomials. As x -> -infinity, |R(x)| -> infinity,
+so the entire left half-plane cannot lie inside the stability region. Hence explicit methods cannot be A-stable.
