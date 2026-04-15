@@ -10,7 +10,7 @@ from typing import Callable, Dict, Iterable, List, Tuple
 import matplotlib.pyplot as plt
 import numpy as np
 
-from src.backend import CUPY_AVAILABLE, Timer, get_backend, sync, to_cpu
+from backend import CUPY_AVAILABLE, Timer, get_backend, sync, to_cpu
 
 try:
     import cupy as cp  # noqa: F401
@@ -39,6 +39,7 @@ def save_csv(path: Path, header: str, arr: np.ndarray) -> None:
         header: Header string for the CSV file.
         arr: NumPy array to save.
     """
+    arr = np.asarray(arr, dtype=np.float64)
     np.savetxt(path, arr, delimiter=",", header=header, comments="")
 
 
@@ -316,11 +317,11 @@ def problem1_timing(outdir: Path) -> None:
     plt.savefig(outdir / "problem1_timing_vs_dt.png")
     plt.close()
 
-    save_csv(
-        outdir / "problem1_timing_summary_smallest_dt.csv",
-        "method,cpu_time,gpu_time,speedup_cpu_over_gpu",
-        np.asarray(summary_rows, dtype=object),
-    )
+    with open(outdir / "problem1_timing_summary_smallest_dt.csv", 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["method", "cpu_time", "gpu_time", "speedup_cpu_over_gpu"])
+        for row in summary_rows:
+            writer.writerow(row)
 
 
 def run_problem1(outdir: Path) -> None:
@@ -427,19 +428,26 @@ def run_problem2(outdir: Path, grid_n: int = 801) -> None:
     plt.figure(figsize=(7.5, 6.0))
     extents = []
 
+    # Define colors for each method
+    colors = {
+        "euler": "blue",
+        "rk2": "orange",
+        "rk4": "green"
+    }
+    
     for name, fun in P2_R.items():
         absR = np.abs(fun(Z))
         np.save(outdir / f"{name}_absR.npy", absR)
-        plt.contour(X, Y, absR, levels=[1.0], linewidths=2.0)
+        plt.contour(X, Y, absR, levels=[1.0], linewidths=2.0, colors=colors[name], label=name)
         xmin = estimate_negative_real_extent(fun)
         extents.append([name, xmin])
 
     # overlay legends using proxies
     import matplotlib.lines as mlines
     proxies = [
-        mlines.Line2D([], [], linewidth=2, label="Euler"),
-        mlines.Line2D([], [], linewidth=2, label="RK2 midpoint"),
-        mlines.Line2D([], [], linewidth=2, label="RK4"),
+        mlines.Line2D([], [], linewidth=2, color="blue", label="Euler"),
+        mlines.Line2D([], [], linewidth=2, color="orange", label="RK2 midpoint"),
+        mlines.Line2D([], [], linewidth=2, color="green", label="RK4"),
     ]
     plt.legend(handles=proxies, loc="upper right")
     plt.axhline(0.0, color="k", linewidth=0.8, alpha=0.5)
@@ -450,11 +458,11 @@ def run_problem2(outdir: Path, grid_n: int = 801) -> None:
     plt.savefig(outdir / "problem2_stability_regions.png")
     plt.close()
 
-    save_csv(
-        outdir / "problem2_negative_real_extent.csv",
-        "method,estimated_xmin",
-        np.asarray(extents, dtype=object),
-    )
+    with open(outdir / "problem2_negative_real_extent.csv", 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["method", "estimated_xmin"])
+        for row in extents:
+            writer.writerow(row)
 
     theory = (
         "Stability functions used:\n"
@@ -558,14 +566,13 @@ def run_problem3(outdir: Path, Ns: Iterable[int], dt: float = 1e-3, tf: float = 
         speedup = tcpu.dt / gpu_t if backend_gpu.has_gpu else np.nan
         rows.append([N, tcpu.dt, gpu_t, speedup, throughput_cpu, throughput_gpu])
 
-    arr = np.asarray(rows, dtype=object)
+    arr_num = np.array(rows, dtype=float)
     save_csv(
         outdir / "problem3_benchmark.csv",
         "N,cpu_time_s,gpu_time_s,speedup_cpu_over_gpu,throughput_cpu,throughput_gpu",
-        arr,
+        arr_num,
     )
 
-    arr_num = np.array(rows, dtype=float)
     N = arr_num[:, 0]
     cpu_t = arr_num[:, 1]
     gpu_t = arr_num[:, 2]
@@ -831,20 +838,13 @@ def run_problem4(outdir: Path, d: int = 10**6, dt_small: float = 1e-6, dt_large:
     else:
         gpu_summary = "CuPy/GPU unavailable. Benchmark skipped on GPU.\n"
 
-    summary_arr = np.asarray(
-        [
-            ["TR", dt_small, max_rel_err(y_tr_small)],
-            ["TRBDF2", dt_small, max_rel_err(y_trb_small)],
-            ["TR", dt_large, max_rel_err(y_tr_large)],
-            ["TRBDF2", dt_large, max_rel_err(y_trb_large)],
-        ],
-        dtype=object,
-    )
-    save_csv(
-        outdir / "problem4_accuracy_summary.csv",
-        "method,dt,max_relative_error_at_t1",
-        summary_arr,
-    )
+    with open(outdir / "problem4_accuracy_summary.csv", 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(["method", "dt", "max_relative_error_at_t1"])
+        writer.writerow(["TR", dt_small, max_rel_err(y_tr_small)])
+        writer.writerow(["TRBDF2", dt_small, max_rel_err(y_trb_small)])
+        writer.writerow(["TR", dt_large, max_rel_err(y_tr_large)])
+        writer.writerow(["TRBDF2", dt_large, max_rel_err(y_trb_large)])
 
     notes = (
         "TR step factor for y'=-alpha y: (1 - alpha dt / 2) / (1 + alpha dt / 2)\n"
