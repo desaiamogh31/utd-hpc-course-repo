@@ -1,0 +1,4 @@
+method,estimated_xmin
+euler,-2.0
+rk2,-2.0
+rk4,-2.78525
