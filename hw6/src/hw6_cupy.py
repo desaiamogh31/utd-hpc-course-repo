@@ -580,6 +580,8 @@ def run_problem3(outdir: Path, Ns: Iterable[int], dt: float = 1e-3, tf: float = 
     throughput_cpu = arr_num[:, 4]
     throughput_gpu = arr_num[:, 5]
 
+# Plotting results
+    #Plot benchmark CPU and GPU runtimes
     plt.figure()
     plt.loglog(N, cpu_t, "o-", label="CPU")
     if backend_gpu.has_gpu:
@@ -591,6 +593,7 @@ def run_problem3(outdir: Path, Ns: Iterable[int], dt: float = 1e-3, tf: float = 
     plt.savefig(outdir / "problem3_runtime.png")
     plt.close()
 
+    #Plot speedup of GPU over CPU
     if backend_gpu.has_gpu:
         plt.figure()
         plt.semilogx(N, speedup, "o-")
@@ -600,6 +603,7 @@ def run_problem3(outdir: Path, Ns: Iterable[int], dt: float = 1e-3, tf: float = 
         plt.savefig(outdir / "problem3_speedup.png")
         plt.close()
 
+    #Plot throughput in trajectory-steps per second for CPU and GPU
     plt.figure()
     plt.loglog(N, throughput_cpu, "o-", label="CPU")
     if backend_gpu.has_gpu:
@@ -611,6 +615,7 @@ def run_problem3(outdir: Path, Ns: Iterable[int], dt: float = 1e-3, tf: float = 
     plt.savefig(outdir / "problem3_throughput.png")
     plt.close()
 
+    #Save summary notes about GPU performance
     notes = [
         f"Backend GPU available: {backend_gpu.has_gpu}",
         "This problem is vectorized over independent trajectories.",
@@ -750,7 +755,7 @@ def run_problem4(outdir: Path, d: int = 10**6, dt_small: float = 1e-6, dt_large:
 
     backend_cpu = get_backend(prefer_gpu=False)
     backend_gpu = get_backend(prefer_gpu=True)
-
+    # Create a range of alpha values spanning several orders of magnitude to demonstrate stiffness
     alpha_cpu = np.logspace(0, 6, int(d), dtype=np.float32)
     y0_cpu = np.ones(int(d), dtype=np.float32)
     exact_cpu = np.exp(-alpha_cpu * tf)
@@ -786,15 +791,18 @@ def run_problem4(outdir: Path, d: int = 10**6, dt_small: float = 1e-6, dt_large:
     bad_hist = explicit_history(alpha_demo, dt_explicit_bad)
 
     labels = ["alpha=1", "alpha=1e3", "alpha=1e6"]
-    plt.figure()
-    for j, lab in enumerate(labels):
-        plt.semilogy(times_good, np.abs(good_hist[:, j]), label=f"{lab}, stable dt")
-        plt.semilogy(times_bad, np.abs(bad_hist[:, j]), "--", label=f"{lab}, unstable dt")
-    plt.xlabel("t")
-    plt.ylabel("|y(t)|")
-    plt.title("Problem 4 explicit Euler stiffness demo")
-    plt.legend(ncol=2, fontsize=9)
-    plt.savefig(outdir / "problem4_explicit_stiffness_demo.png")
+    # Create 3 subplots (one per alpha value) for clarity
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+    for j, (ax, lab) in enumerate(zip(axes, labels)):
+        ax.semilogy(times_good, np.abs(good_hist[:, j]), "o-", markevery=max(1, len(times_good)//10), label=f"stable dt={dt_explicit_good}", linewidth=2)
+        ax.semilogy(times_bad, np.abs(bad_hist[:, j]), "s--", markevery=max(1, len(times_bad)//10), label=f"unstable dt={dt_explicit_bad}", linewidth=2)
+        ax.set_xlabel("t")
+        ax.set_ylabel("|y(t)|")
+        ax.set_title(f"Explicit Euler stiffness: {lab}")
+        ax.legend(fontsize=10)
+        ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(outdir / "problem4_explicit_stiffness_demo.png", dpi=150)
     plt.close()
 
     # TR vs TRBDF2 damping demo
@@ -815,15 +823,18 @@ def run_problem4(outdir: Path, d: int = 10**6, dt_small: float = 1e-6, dt_large:
     hist_tb = np.asarray(hist_tb)
     times = np.asarray(times)
 
-    plt.figure()
-    for j, lab in enumerate(labels):
-        plt.semilogy(times, np.abs(hist_tr[:, j]), "o-", markevery=max(1, len(times)//10), label=f"TR {lab}")
-        plt.semilogy(times, np.abs(hist_tb[:, j]), "--", label=f"TRBDF2 {lab}")
-    plt.xlabel("t")
-    plt.ylabel("|y(t)|")
-    plt.title("Problem 4 damping: TR vs TRBDF2")
-    plt.legend(ncol=2, fontsize=9)
-    plt.savefig(outdir / "problem4_tr_vs_trbdf2_damping.png")
+    # Create 3 subplots (one per alpha value) for clarity
+    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
+    for j, (ax, lab) in enumerate(zip(axes, labels)):
+        ax.semilogy(times, np.abs(hist_tr[:, j]), "o-", markevery=max(1, len(times)//10), label=f"TR {lab}", linewidth=2)
+        ax.semilogy(times, np.abs(hist_tb[:, j]), "s--", label=f"TRBDF2 {lab}", linewidth=2)
+        ax.set_xlabel("t")
+        ax.set_ylabel("|y(t)|")
+        ax.set_title(f"Damping comparison: {lab}")
+        ax.legend(fontsize=10)
+        ax.grid(True, alpha=0.3)
+    plt.tight_layout()
+    plt.savefig(outdir / "problem4_tr_vs_trbdf2_damping.png", dpi=150)
     plt.close()
 
     # GPU benchmark for TRBDF2
@@ -831,9 +842,9 @@ def run_problem4(outdir: Path, d: int = 10**6, dt_small: float = 1e-6, dt_large:
         alpha_gpu = backend_gpu.xp.logspace(0, 6, int(d), dtype=backend_gpu.xp.float32)
         y0_gpu = backend_gpu.xp.ones(int(d), dtype=backend_gpu.xp.float32)
         with Timer(backend_cpu) as tcpu:
-            _ = trbdf2_integrate_linear(y0_cpu, alpha_cpu, dt_large, tf, backend_cpu.xp)
+            _ = trbdf2_integrate_linear(y0_cpu, alpha_cpu, 0.1*dt_large, 10*tf, backend_cpu.xp)
         with Timer(backend_gpu) as tgpu:
-            _ = trbdf2_integrate_linear(y0_gpu, alpha_gpu, dt_large, tf, backend_gpu.xp)
+            _ = trbdf2_integrate_linear(y0_gpu, alpha_gpu, 0.1*dt_large, 10*tf, backend_gpu.xp)
         gpu_summary = f"CPU TRBDF2 time: {tcpu.dt:.6f} s\nGPU TRBDF2 time: {tgpu.dt:.6f} s\nSpeedup: {tcpu.dt / tgpu.dt:.3f}\n"
     else:
         gpu_summary = "CuPy/GPU unavailable. Benchmark skipped on GPU.\n"

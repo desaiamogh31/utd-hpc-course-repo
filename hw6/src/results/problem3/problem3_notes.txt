@@ -1,0 +1,4 @@
+Backend GPU available: True
+This problem is vectorized over independent trajectories.
+GPU wins only once N is large enough that kernel-launch and transfer overheads are amortized.
+For small N, CPU often wins because the work per launch is too small.
