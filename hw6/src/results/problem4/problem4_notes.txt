@@ -1,8 +1,8 @@
 TR step factor for y'=-alpha y: (1 - alpha dt / 2) / (1 + alpha dt / 2)
 TRBDF2 gamma used: 2 - sqrt(2)
-CPU TRBDF2 time: 1.322797 s
-GPU TRBDF2 time: 3.527948 s
-Speedup: 0.375
+CPU TRBDF2 time: 19.730671 s
+GPU TRBDF2 time: 1.874311 s
+Speedup: 10.527
 
 TR is A-stable but not L-stable, so very stiff modes are not strongly damped for large dt.
 TRBDF2 is L-stable, so large-alpha modes are strongly damped.

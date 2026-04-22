@@ -756,8 +756,8 @@ def run_problem4(outdir: Path, d: int = 10**6, dt_small: float = 1e-6, dt_large:
     backend_cpu = get_backend(prefer_gpu=False)
     backend_gpu = get_backend(prefer_gpu=True)
     # Create a range of alpha values spanning several orders of magnitude to demonstrate stiffness
-    alpha_cpu = np.logspace(0, 6, int(d), dtype=np.float32)
-    y0_cpu = np.ones(int(d), dtype=np.float32)
+    alpha_cpu = np.logspace(0, 6, int(d/100), dtype=np.float32)
+    y0_cpu = np.ones(int(d/100), dtype=np.float32)
     exact_cpu = np.exp(-alpha_cpu * tf)
 
     # Accuracy and stability summary
@@ -770,42 +770,43 @@ def run_problem4(outdir: Path, d: int = 10**6, dt_small: float = 1e-6, dt_large:
         denom = np.maximum(np.abs(exact_cpu), 1e-30)
         return float(np.max(np.abs(y - exact_cpu) / denom))
 
-    # explicit instability demonstration
-    alpha_demo = np.array([1.0, 1e3, 1e6], dtype=np.float64)
-    y0_demo = np.ones_like(alpha_demo)
-    dt_explicit_good = 1e-6
-    dt_explicit_bad = 5e-6  # unstable for alpha=1e6 because |1-dt*alpha| > 1
-    times_good = np.linspace(0.0, tf, int(round(tf / dt_explicit_good)) + 1)
-    times_bad = np.linspace(0.0, tf, int(round(tf / dt_explicit_bad)) + 1)
-
-    def explicit_history(alpha_vals, dt):
-        y = np.ones_like(alpha_vals, dtype=np.float64)
-        hist = [y.copy()]
-        nsteps = int(round(tf / dt))
-        for _ in range(nsteps):
-            y = y - dt * alpha_vals * y
-            hist.append(y.copy())
-        return np.asarray(hist)
-
-    good_hist = explicit_history(alpha_demo, dt_explicit_good)
-    bad_hist = explicit_history(alpha_demo, dt_explicit_bad)
-
-    labels = ["alpha=1", "alpha=1e3", "alpha=1e6"]
-    # Create 3 subplots (one per alpha value) for clarity
-    fig, axes = plt.subplots(1, 3, figsize=(15, 4))
-    for j, (ax, lab) in enumerate(zip(axes, labels)):
-        ax.semilogy(times_good, np.abs(good_hist[:, j]), "o-", markevery=max(1, len(times_good)//10), label=f"stable dt={dt_explicit_good}", linewidth=2)
-        ax.semilogy(times_bad, np.abs(bad_hist[:, j]), "s--", markevery=max(1, len(times_bad)//10), label=f"unstable dt={dt_explicit_bad}", linewidth=2)
-        ax.set_xlabel("t")
-        ax.set_ylabel("|y(t)|")
-        ax.set_title(f"Explicit Euler stiffness: {lab}")
-        ax.legend(fontsize=10)
-        ax.grid(True, alpha=0.3)
-    plt.tight_layout()
-    plt.savefig(outdir / "problem4_explicit_stiffness_demo.png", dpi=150)
-    plt.close()
+    # explicit instability demonstration - fixed alpha, varying dt
+    alpha_fixed = 1e6  # Very stiff system
+    dts_demo = [0.01, 0.0001, 0.000001]
+    
+    for dt_val in dts_demo:
+        y = 1.0
+        hist = [y]
+        nsteps = int(round(tf / dt_val))
+        times = np.linspace(0.0, tf, nsteps + 1)
+        
+        for step in range(nsteps):
+            y = y - dt_val * alpha_fixed * y
+            hist.append(y)
+            # Stop if diverged (overflow protection)
+            if np.isnan(y) or np.isinf(y) or abs(y) > 1e100:
+                hist.append(np.nan)
+                break
+        
+        hist = np.asarray(hist[:len(times)])
+        
+        # Check stability criterion: |1 - dt*alpha| < 1 for stability
+        stability_factor = abs(1.0 - dt_val * alpha_fixed)
+        stability_status = "stable" if stability_factor < 1.0 else "UNSTABLE"
+        
+        plt.figure(figsize=(8, 6))
+        plt.semilogy(times[:len(hist)], np.abs(hist) + 1e-300, "o-", 
+                     linewidth=2, markersize=5, color="darkblue")
+        plt.xlabel("t", fontsize=12)
+        plt.ylabel("|y(t)|", fontsize=12)
+        plt.title(f"Explicit Euler: α={alpha_fixed}, dt={dt_val} ({stability_status}, |1-dt·α|={stability_factor:.3f})", fontsize=12)
+        plt.grid(True, alpha=0.3)
+        plt.tight_layout()
+        plt.savefig(outdir / f"problem4_explicit_stiffness_dt_{dt_val:.6f}.png", dpi=150)
+        plt.close()
 
     # TR vs TRBDF2 damping demo
+    labels = ["alpha=1", "alpha=1e3", "alpha=1e6"]
     alpha_select = np.array([1.0, 1e3, 1e6], dtype=np.float64)
     y_tr = np.ones_like(alpha_select)
     y_tb = np.ones_like(alpha_select)
@@ -838,9 +839,12 @@ def run_problem4(outdir: Path, d: int = 10**6, dt_small: float = 1e-6, dt_large:
     plt.close()
 
     # GPU benchmark for TRBDF2
+    alpha_cpu = np.logspace(0, 6, int(d), dtype=np.float32)
+    y0_cpu = np.ones(int(d), dtype=np.float32)
     if backend_gpu.has_gpu:
-        alpha_gpu = backend_gpu.xp.logspace(0, 6, int(d), dtype=backend_gpu.xp.float32)
-        y0_gpu = backend_gpu.xp.ones(int(d), dtype=backend_gpu.xp.float32)
+        # Transfer CPU arrays to GPU to avoid NVRTC compilation issues
+        alpha_gpu = backend_gpu.xp.asarray(alpha_cpu)
+        y0_gpu = backend_gpu.xp.asarray(y0_cpu)
         with Timer(backend_cpu) as tcpu:
             _ = trbdf2_integrate_linear(y0_cpu, alpha_cpu, 0.1*dt_large, 10*tf, backend_cpu.xp)
         with Timer(backend_gpu) as tgpu:
